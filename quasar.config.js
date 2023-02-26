@@ -30,8 +30,6 @@ module.exports = configure(function (/* ctx */) {
 		// --> boot files are part of "main.js"
 		// https://v2.quasar.dev/quasar-cli-vite/boot-files
 		boot: [
-      
-      
 		],
 
 		// https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -169,7 +167,27 @@ module.exports = configure(function (/* ctx */) {
 
 		// Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-capacitor-apps/configuring-capacitor
 		capacitor: {
-			hideSplashscreen: true
+			hideSplashscreen: true,
+			plugins: {
+			// 	CapacitorSQLite: {
+			// 		iosDatabaseLocation: 'Library/CapacitorDatabase',
+			// 		iosIsEncryption: false,
+			// 		iosKeychainPrefix: 'cap',
+			// 		iosBiometric: {
+			// 			biometricAuth: false,
+			// 			biometricTitle: 'Biometric login for capacitor sqlite'
+			// 		},
+			// 		androidIsEncryption: false,
+			// 		androidBiometric: {
+			// 			biometricAuth: false,
+			// 			biometricTitle: 'Biometric login for capacitor sqlite',
+			// 			biometricSubTitle: 'Log in using your biometric'
+			// 		},
+			// 		electronWindowsLocation: 'C:\\ProgramData\\CapacitorDatabases',
+			// 		electronMacLocation: 'YOUR_VOLUME/CapacitorDatabases',
+			// 		electronLinuxLocation: 'Databases'
+			// 	}
+			}
 		},
 
 		// Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron

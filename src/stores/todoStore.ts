@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { dateFromString, dateToString, type ITodo, type ITodoTimedGroup } from 'src/components/models';
+import { Preferences } from '@capacitor/preferences';
 
 export interface IVTodo extends ITodo {
 	vDate: string;
@@ -21,15 +22,16 @@ const verifiedKeys = <T extends object>(reference: T, value: T): T => {
 	return value;
 };
 
-const deadlineString = (sdate: string) => {
+const deadlineString = (sdate: string, brackets = true) => {
 	const todayDate = new Date();
 	const today = dateToString(todayDate);
 	const d = Math.floor((dateFromString(sdate).getTime() - todayDate.getTime()) / 1000 / 60 / 60 / 24);
-	if (d > 0 || today != sdate)
-		return `${d > 0 ? d : '<1'} days left${d > 0 ? '' : '!'}`;
-	if (d == 0)
-		return 'today is the day';
-	return 'expired';
+	if (d < 0)
+		return '😅';
+	const brace = (t: string) => brackets ? `(${t})` : t;
+	if (d == 0 && today == sdate)
+		return brace('today is the day');
+	return brace(`${d > 0 ? d : '<1'} days left${d > 0 ? '' : '!'}`);
 };
 
 export const useTodoStore = defineStore('counter', {
@@ -59,7 +61,7 @@ export const useTodoStore = defineStore('counter', {
 			const vDate = (iv: IVTodo) => {
 				const deadline = getDeadline(iv);
 				if (deadline)
-					return `${iv.dateFulfill ? '' : 'Group deadline: '}${deadline} (${deadlineString(deadline)})`;
+					return `${iv.dateFulfill ? '' : 'Group deadline: '}${deadline} ${deadlineString(deadline, true)}`;
 				return 'No specific deadline';
 			};
 
@@ -67,7 +69,7 @@ export const useTodoStore = defineStore('counter', {
 				const deadline = getDeadline(iv);
 				Object.assign(iv, {
 					vDate: vDate(iv),
-					vDateShort: deadline ? ((iv.dateFulfill ? iv.dateFulfill + ' (' : '') + deadlineString(deadline) + (iv.dateFulfill ? ')' : '')) : undefined,
+					vDateShort: deadline ? deadlineString(deadline, !!iv.dateFulfill) : undefined,
 					deadline
 				} as Partial<IVTodo>);
 			}
@@ -76,7 +78,7 @@ export const useTodoStore = defineStore('counter', {
 		vTodosGroups(): IVTodoTimedGroup[] {
 			return this.todoGroups.map(
 				(g, i) => Object.assign({}, g, <Partial<IVTodoTimedGroup>>{
-					vDate: (g.end ? `${g.start} - ${g.end}` : g.start) + ` (${deadlineString(g.end ?? g.start)})`,
+					vDate: (g.end ? `${g.start} - ${g.end}` : g.start) + ' ' + deadlineString(g.end ?? g.start),
 					items: this.vTodos.filter(t => g.itemIDs.includes(t.id)),
 					id: i
 				})
@@ -84,13 +86,29 @@ export const useTodoStore = defineStore('counter', {
 		},
 	},
 	actions: {
+		async saveState() {
+			await Preferences.set({ key: 'todos', value: JSON.stringify(this.$state) });
+		},
+		async loadState() {
+			Object.assign(this.$state, JSON.parse((await Preferences.get({ key: 'todos ' })).value || '{}'));
+		},
 		addTodo(todo: ITodo) {
 			const id = parseInt(Object.entries(this.todos).at(-1)?.at(0) as (string | undefined) ?? '-1') + 1;
 			this.todos[id] = todo;
+			this.saveState();
 			return id;
+		},
+		removeTodo(id: number) {
+			delete this.todos[id];
+			this.saveState();
+		},
+		removeGroup(id: number) {
+			this.todoGroups.splice(id, 1);
+			this.saveState();
 		},
 		groupTodo(group: number, todo: number) { 
 			this.todoGroups[group].itemIDs.push(todo);
+			this.saveState();
 		},
 		updateTodo(id: number, value: Partial<ITodo>) {
 			if (!Object.keys(this.todos).includes(id + ''))
@@ -98,6 +116,7 @@ export const useTodoStore = defineStore('counter', {
 			const todo = this.todos[id] as ITodo;
 			value = verifiedKeys(todo, value);
 			Object.assign(todo, value);
+			this.saveState();
 		},
 		updateTodoGroup(id: number, value: ITodoTimedGroup) {
 			if (!this.todoGroups[id])
@@ -105,12 +124,14 @@ export const useTodoStore = defineStore('counter', {
 			const group = this.todoGroups[id] as ITodoTimedGroup;
 			value = verifiedKeys(group, value);
 			Object.assign(group, value);
+			this.saveState();
 		},
 		addTodoTimedGroup(group: ITodoTimedGroup, endPrevious = true) {
 			const last = this.todoGroups.at(-1);
 			if (endPrevious && last && last.end == 'current')
 				last.end = undefined;
 			this.todoGroups.push(group);
+			this.saveState();
 		}
 	},
 });
