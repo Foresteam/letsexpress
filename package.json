@@ -12,10 +12,10 @@
     "prepare": "husky install",
     "precommit": "yarn lint-staged && yarn test",
     "dev": "npx quasar dev",
-    "android:dev": "JAVA_HOME=/usr/lib/jvm/java-11-openjdk npx quasar dev -m capacitor -T android",
-    "android:build": "JAVA_HOME=/usr/lib/jvm/java-11-openjdk npx quasar build -d -m capacitor -T android",
-		"android:install": "adb install dist/capacitor/android/apk/debug/app-debug.apk",
-    "android:ide": "JAVA_HOME=/usr/lib/jvm/java-11-openjdk npx quasar dev -m capacitor -T android --ide"
+    "android:dev": "npx quasar dev -m capacitor -T android",
+    "android:build": "npx quasar build -d -m capacitor -T android",
+    "android:install": "adb install dist/capacitor/android/apk/debug/app-debug.apk",
+    "android:ide": "npx quasar dev -m capacitor -T android --ide"
   },
   "lint-staged": {
     "**/*.{vue,ts,js,tsx}": "eslint --fix --max-warnings=0"
