@@ -5,7 +5,16 @@
 				<div class="text-h6">Add todo</div>
 			</q-card-section>
 			<q-card-section class="q-pt-none">
-				<q-input :dense="$q.platform.is.capacitor" outlined v-model="task" label="Task" type="textarea" />
+				<q-input
+					:dense="$q.platform.is.capacitor"
+					outlined
+					v-model="task"
+					label="Task"
+					type="textarea"
+					:error="validation.form.task.isError()"
+					error-message="Required"
+					@update:model-value="validation.form.task.unlocked.value = true"
+				/>
 				<q-input :dense="$q.platform.is.capacitor" outlined v-model="details" label="Details" type="textarea" class="q-mt-sm" />
 
 				<q-btn-dropdown :dense="$q.platform.is.capacitor" class="q-mt-sm" style="width: 100%" auto-close>
@@ -57,6 +66,7 @@ import { type ITodo } from '../models';
 import { useQuasar } from 'quasar';
 import { useTodoStore } from 'src/stores/todoStore';
 import ToDoGroup from '../ToDoGroup.vue';
+import useValidation from 'src/components/useValidation';
 
 export interface Payload extends ITodo {
 	group?: number;
@@ -67,8 +77,13 @@ const store = useTodoStore();
 
 const task = ref('');
 const details = ref('');
-
 const _sDate = ref('');
+const _group = ref<number>();
+
+const validation = useValidation({
+	task: () => task.value.length > 0
+});
+
 const sDate = computed(() => {
 	if (_sDate.value)
 		return _sDate.value;
@@ -77,7 +92,6 @@ const sDate = computed(() => {
 	return 'No specific';
 });
 
-const _group = ref<number>();
 const group = computed(() => _group.value !== undefined ? store.vTodosGroups[_group.value] : undefined);
 const filterGroups = ref('');
 const filteredGroups = computed(() => store.vTodosGroups.filter(g => g.title.indexOf(filterGroups.value) >= 0 || g.vDate.indexOf(filterGroups.value) >= 0));
@@ -90,11 +104,15 @@ defineEmits([
 
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
-const onOKClick = () => (onDialogOK as (payload: Payload) => void)({
-	completed: false,
-	content: task.value,
-	details: details.value,
-	dateFulfill: _sDate.value || undefined,
-	group: _group.value
-});
+const onOKClick = () => {
+	if (!validation.validateAll())
+		return;
+	(onDialogOK as (payload: Payload) => void)({
+		completed: false,
+		content: task.value,
+		details: details.value,
+		dateFulfill: _sDate.value || undefined,
+		group: _group.value
+	});
+};
 </script>

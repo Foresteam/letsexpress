@@ -10,8 +10,8 @@
 					outlined
 					v-model="title"
 					label="Group title"
-					:error="errors.title.isError()"
-					@update:model-value="errors.title.unlocked.value = true"
+					:error="validation.title.isError()"
+					@update:model-value="validation.title.unlocked.value = true"
 					error-message="Required"
 				/>
 				<q-btn-group spread class="q-mt-sm" unelevated flat>
@@ -21,11 +21,11 @@
 						readonly
 						v-model="sDateRange"
 						:label="typeof dateRange == 'object' ? 'Date range' : 'Deadline date'"
-						:error="errors.dateRange.isError()"
+						:error="validation.dateRange.isError()"
 						error-message="Required"
 						class="col-10"
 					/>
-					<q-btn-dropdown dense color="primary" @click="errors.dateRange.unlocked.value = true">
+					<q-btn-dropdown dense color="primary" @click="validation.dateRange.unlocked.value = true">
 						<q-date v-model="dateRange" range class="q-mx-auto" style="display: block;" />
 					</q-btn-dropdown>
 				</q-btn-group>
@@ -64,13 +64,9 @@ const props = defineProps<{ dateBegin?: Date }>();
 const dateRange = ref<Payload['dateRange'] | string>({ from: '', to: '' });
 const title = ref('');
 
-const errors = useValidation({
-	title: {
-		validate: () => title.value.length > 0
-	},
-	dateRange: {
-		validate: () => typeof dateRange.value == 'object' ? !!dateRange.value.from : dateRange.value.length > 0
-	}
+const { form: validation, validateAll } = useValidation({
+	title: () => title.value.length > 0,
+	dateRange: () => typeof dateRange.value == 'object' ? !!dateRange.value.from : dateRange.value.length > 0
 });
 
 const endPrevious = ref(true);
@@ -88,7 +84,7 @@ defineEmits([
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const onOKClick = () => {
-	if (!errors.validateAll())
+	if (!validateAll())
 		return;
 	onDialogOK({
 		title: title.value,
