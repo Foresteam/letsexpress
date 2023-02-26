@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { dateFromString, dateToString, type ITodo, type ITodoTimedGroup } from 'src/components/models';
-import { Preferences } from '@capacitor/preferences';
+import { LocalStorage } from 'quasar';
 
 export interface IVTodo extends ITodo {
 	vDate: string;
@@ -87,10 +87,10 @@ export const useTodoStore = defineStore('counter', {
 	},
 	actions: {
 		async saveState() {
-			await Preferences.set({ key: 'todos', value: JSON.stringify(this.$state) });
+			LocalStorage.set('todos', JSON.stringify(this.$state));
 		},
 		async loadState() {
-			Object.assign(this.$state, JSON.parse((await Preferences.get({ key: 'todos ' })).value || '{}'));
+			Object.assign(this.$state, JSON.parse(LocalStorage.getItem('todos') || '{}'));
 		},
 		addTodo(todo: ITodo) {
 			const id = parseInt(Object.entries(this.todos).at(-1)?.at(0) as (string | undefined) ?? '-1') + 1;

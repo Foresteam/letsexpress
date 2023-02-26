@@ -14,13 +14,13 @@
     "dev": "npx quasar dev",
     "android:dev": "JAVA_HOME=/usr/lib/jvm/java-11-openjdk npx quasar dev -m capacitor -T android",
     "android:build": "JAVA_HOME=/usr/lib/jvm/java-11-openjdk npx quasar build -d -m capacitor -T android",
+		"android:install": "adb install dist/capacitor/android/apk/debug/app-debug.apk",
     "android:ide": "JAVA_HOME=/usr/lib/jvm/java-11-openjdk npx quasar dev -m capacitor -T android --ide"
   },
   "lint-staged": {
     "**/*.{vue,ts,js,tsx}": "eslint --fix --max-warnings=0"
   },
   "dependencies": {
-    "@capacitor/preferences": "^4.0.2",
     "@quasar/extras": "^1.0.0",
     "husky": "^8.0.3",
     "pinia": "^2.0.11",
