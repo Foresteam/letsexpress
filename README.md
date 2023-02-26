@@ -1,41 +1,15 @@
-# Let's Express (letsexpress)
+# Let's Express (Quasar)
+## Yet another todo app
 
-A Quasar Project
+## Как же собрать это чудо?
+Установка:
+NPM, Yarn, Java 11. Не стоит также забывать и про еще одну интересную вещь: JLink (иначе ничего не соберется, кто бы мог подумать...). Установить его можно так: ```yay -S extra/jdk11-openjdk```
 
-## Install the dependencies
-```bash
-yarn
-# or
-npm install
+Далее:
+```sh
+yarn install
+yarn android:dev
 ```
+И молиться.
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-### Format the files
-```bash
-yarn format
-# or
-npm run format
-```
-
-
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+*Интересный **факт**: нужно еще задать ```JAVA_HOME```*. По крайней мере, так дела обстоят на Linux. Для моей конкретной машины он задан в файле **./env**
