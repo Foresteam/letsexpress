@@ -12,7 +12,7 @@
 	<q-card v-else>
 		<template v-if="type == 'simple'">
 			<q-expansion-item :label="shortenedTitle" :caption="group.vDate" switch-toggle-side expand-separator>
-				<to-do v-for="todo of ivgroup.items" :key="`sgtodo${todo.id}`" :ivtodo="todo" />
+				<to-do v-for="todo of ivgroup.items" :key="`sgtodo${todo.id}`" :ivtodo="todo" simplified />
 			</q-expansion-item>
 		</template>
 		<template v-if="type == 'unfolded'">

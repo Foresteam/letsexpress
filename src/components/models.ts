@@ -1,5 +1,6 @@
 export interface ITodo {
 	content: string;
+	details?: string;
 	completed?: boolean;
 	dateFulfill?: string;
 };

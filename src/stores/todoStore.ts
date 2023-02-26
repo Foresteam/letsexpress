@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia';
-import { type ITodo, type ITodoTimedGroup } from 'src/components/models';
+import { dateFromString, dateToString, type ITodo, type ITodoTimedGroup } from 'src/components/models';
 
 export interface IVTodo extends ITodo {
 	vDate: string;
+	vDateShort: string;
+	deadline: string;
 	id: number;
 }
 export interface IVTodoTimedGroup extends ITodoTimedGroup {
@@ -19,35 +21,67 @@ const verifiedKeys = <T extends object>(reference: T, value: T): T => {
 	return value;
 };
 
+const deadlineString = (sdate: string) => {
+	const todayDate = new Date();
+	const today = dateToString(todayDate);
+	const d = Math.floor((dateFromString(sdate).getTime() - todayDate.getTime()) / 1000 / 60 / 60 / 24);
+	if (d > 0 || today != sdate)
+		return `${d > 0 ? d : '<1'} days left${d > 0 ? '' : '!'}`;
+	if (d == 0)
+		return 'today is the day';
+	return 'expired';
+};
+
 export const useTodoStore = defineStore('counter', {
 	state: () => ({
 		todos: {} as { [key: number]: ITodo | undefined },
 		todoGroups: [] as ITodoTimedGroup[]
 	}),
 	getters: {
-		vTodosGroups(): IVTodoTimedGroup[] {
-			return this.todoGroups.map(
-				(g, i) => Object.assign({}, g, <Partial<IVTodoTimedGroup>>{
-					vDate: g.end ? `${g.start} - ${g.end}` : g.start,
-					items: this.vTodos.filter(t => g.itemIDs.includes(t.id)),
-					id: i
-				})
-			) as IVTodoTimedGroup[];
-		},
-		vTodos: state => {
-			const todos = Object.entries(state.todos).map(([k, v]) => {
+		vGrouppedTodos: state => ([] as unknown[]).concat(...state.todoGroups.map(g => g.itemIDs)),
+		vTodos() {
+			const todos = Object.entries(this.todos).map(([k, v]) => {
 				const t: Partial<IVTodo> = {
 					...v,
 					id: parseInt(k)
 				};
 				return t;
 			}) as IVTodo[];
-			for (const iv of todos)
+
+			const getDeadline = (iv: IVTodo) => {
+				if (iv.dateFulfill)
+					return iv.dateFulfill;
+				if (!this.vGrouppedTodos.includes(iv.id))
+					return undefined;
+				const group = this.todoGroups.find(g => g.itemIDs.includes(iv.id)) as ITodoTimedGroup;
+				return group.end ?? group.start;
+			};
+			const vDate = (iv: IVTodo) => {
+				const deadline = getDeadline(iv);
+				if (deadline)
+					return `${iv.dateFulfill ? '' : 'Group deadline: '}${deadline} (${deadlineString(deadline)})`;
+				return 'No specific deadline';
+			};
+
+			for (const iv of todos) {
+				const deadline = getDeadline(iv);
 				Object.assign(iv, {
-					vDate: iv.dateFulfill ?? 'No specific deadline'
+					vDate: vDate(iv),
+					vDateShort: deadline ? ((iv.dateFulfill ? iv.dateFulfill + ' (' : '') + deadlineString(deadline) + (iv.dateFulfill ? ')' : '')) : undefined,
+					deadline
 				} as Partial<IVTodo>);
+			}
 			return todos;
-		}
+		},
+		vTodosGroups(): IVTodoTimedGroup[] {
+			return this.todoGroups.map(
+				(g, i) => Object.assign({}, g, <Partial<IVTodoTimedGroup>>{
+					vDate: (g.end ? `${g.start} - ${g.end}` : g.start) + ` (${deadlineString(g.end ?? g.start)})`,
+					items: this.vTodos.filter(t => g.itemIDs.includes(t.id)),
+					id: i
+				})
+			) as IVTodoTimedGroup[];
+		},
 	},
 	actions: {
 		addTodo(todo: ITodo) {

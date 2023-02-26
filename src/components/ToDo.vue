@@ -1,16 +1,19 @@
 <template>
 	<q-card>
 		<template v-if="simplified">
-			<q-checkbox v-model="completed" />
-			<q-item>
-				<q-item-label>
-					{{ shortenedTask }}
-				</q-item-label>
-				<q-item-label caption>{{ ivtodo.dateFulfill || 'No specific date' }}</q-item-label>
-			</q-item>
+			<q-checkbox v-model="completed" style="width: 100%">
+				{{ ivtodo.content }}
+				<q-item-label caption style="color: rgba(255, 255, 255, .8)">{{ ivtodo.vDateShort }}</q-item-label>
+			</q-checkbox>
 		</template>
 		<template v-else>
-			<q-checkbox v-model="completed" :label="ivtodo.content" style="width: 100%" />
+			<q-checkbox v-model="completed">
+				{{ shortenedTask }}
+				<q-item-label caption style="color: rgba(255, 255, 255, .8)">{{ ivtodo.vDate }}</q-item-label>
+			</q-checkbox>
+			<div v-if="ivtodo.details" class="text-subtitle">
+				{{ ivtodo.details }}
+			</div>
 		</template>
 	</q-card>
 </template>
