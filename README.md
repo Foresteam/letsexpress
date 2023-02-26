@@ -12,4 +12,11 @@ yarn android:dev
 ```
 И молиться.
 
-*Интересный **факт**: нужно еще задать ```JAVA_HOME```*. По крайней мере, так дела обстоят на Linux. Для моей конкретной машины он задан в файле **./env**
+*Интересный **факт**: нужно еще задать ```JAVA_HOME```*. По крайней мере, так дела обстоят на Linux. Для моей конкретной машины он задан в файле **./env**. Вообще-то, там могут понадобиться и другие переменные. Тут уже нужно лезть в документацию Quasar. Но вот то, что задано в моем **.zshrc**:
+```sh
+PATH=$(REMOVE_PART="/opt/google/android-sdk/" sh -c 'echo ":$PATH:" | sed "s@:$REMOVE_PART:@:@g;s@^:\(.*\):\$@\1@"')
+export ANDROID_HOME=~/Android/Sdk
+export ANDROID_SDK_ROOT=~/Android/Sdk
+export PATH=${PATH}:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/platform-tools 
+ ```
+ Возможно, это тоже имеет сюда отношение.
