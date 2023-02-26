@@ -17,7 +17,7 @@
 				/>
 				<q-input :dense="$q.platform.is.capacitor" outlined v-model="details" label="Details" type="textarea" class="q-mt-sm" />
 
-				<q-btn-dropdown :dense="$q.platform.is.capacitor" class="q-mt-sm" style="width: 100%" auto-close>
+				<q-btn-dropdown :dense="$q.platform.is.capacitor" color="primary" class="q-mt-sm" style="width: 100%" auto-close>
 					<template #label>
 						<to-do-group v-if="group" :ivgroup="group" type="item" />
 						<div v-else style="width: 100%">
@@ -30,7 +30,7 @@
 							<q-input dense v-model="filterGroups" label="Search" style="width: 100%" />
 						</q-item>
 						<q-item>
-							<q-btn @click="_group = undefined" class="q-ma-none" style="width: 100%">
+							<q-btn @click="_group = undefined" class="q-ma-none bg-bg" style="width: 100%">
 								<q-item-label>
 									No group
 								</q-item-label>

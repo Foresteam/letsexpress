@@ -1,5 +1,5 @@
 <template>
-	<q-btn v-if="type == 'item'" class="q-ma-none" style="width: 100%">
+	<q-btn v-if="type == 'item'" class="q-ma-none bg-bg" style="width: 100%">
 		<div class="col">
 			<q-item-label>
 				{{ ivgroup.title }}
@@ -9,7 +9,7 @@
 			</q-item-label>
 		</div>
 	</q-btn>
-	<q-card v-else>
+	<q-card flat class="bg-bg" v-else>
 		<template v-if="type == 'simple'">
 			<q-expansion-item switch-toggle-side expand-separator class="expansion">
 				<template #header>
@@ -25,12 +25,15 @@
 			</q-expansion-item>
 		</template>
 		<template v-if="type == 'unfolded'">
-			<div class="text-h6">
-				{{ group.title }}
+			<div class="q-pl-sm bg-accent">
+				<div class="text-h6">
+					{{ group.title }}
+				</div>
+				<div class="text-h6">
+					{{ group.vDate }}
+				</div>
 			</div>
-			<div class="text-h6">
-				{{ group.vDate }}
-			</div>
+			<to-do v-for="todo of ivgroup.items" :key="`sgtodo${todo.id}`" :ivtodo="todo" />
 		</template>
 	</q-card>
 </template>

@@ -1,5 +1,5 @@
 <template>
-	<q-card class="todo" :class="{ done: ivtodo.completed }">
+	<q-card class="todo bg-bg" flat :class="{ done: ivtodo.completed }">
 		<template v-if="simplified">
 			<q-checkbox v-model="completed" style="width: 100%">
 				{{ ivtodo.content }}

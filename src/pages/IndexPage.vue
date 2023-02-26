@@ -1,11 +1,16 @@
 <template>
-  <q-page class="row items-center justify-center">
-		<div style="display: flex; flex-direction: column; gap: 10px; width: calc(100% - 10px * 2)">
-			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" />
-			<q-btn @click="addTodoMenu" color="primary">
-				<q-icon center size="2em" name="add" />
-			</q-btn>
-		</div>
+  <q-page class="column items-center q-px-sm q-pt-sm" style="display: flex; flex-flow: column;">
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+			<to-do v-for="todo of store.vTodos" :key="`todof#${todo.id}`" :ivtodo="todo" class="q-mb-sm" style="width: 100%" />
+		<q-btn round color="positive" icon="add" @click="addTodoMenu" size="1.5rem" class="add-todo" />
   </q-page>
 </template>
 
@@ -28,3 +33,12 @@ const addTodoMenu = () => $q.dialog({
 		store.groupTodo(group, id);
 });
 </script>
+
+<style lang="scss" scoped>
+.add-todo {
+	position: fixed;
+	z-index: 1;
+	bottom: 36px;
+	right: 20px;
+}
+</style>

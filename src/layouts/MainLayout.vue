@@ -1,6 +1,6 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout view="lHh Lpr lFf" style="height: 100%">
+    <q-header>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
         <q-toolbar-title>
@@ -15,9 +15,10 @@
       show-if-above
       bordered
 			class="drawer"
+			style="display: flex; flex-direction: column;"
     >
-			<q-btn act>All-todos</q-btn>
-      <q-list>
+			<div class="text-h6 text-center">Todos</div>
+      <q-list style="flex-grow: 1">
 				<to-do-group
 					v-for="group of vTodosGroups"
 					:key="'todog#' + group.id"
@@ -26,13 +27,17 @@
 				/>
 
       </q-list>
-			<q-btn color="primary" @click="addTodoGroupMenu">
+			<q-btn color="positive" @click="addTodoGroupMenu">
 				<q-icon center size="2em" name="add" />
 			</q-btn>
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+			<q-tabs>
+				<q-route-tab name="todos" to="/" label="Todos" />
+				<q-route-tab name="groups" to="/groups" label="Groups" />
+			</q-tabs>
+			<router-view />
     </q-page-container>
   </q-layout>
 </template>
