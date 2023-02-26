@@ -18,19 +18,13 @@
     >
 			<q-btn act>All-todos</q-btn>
       <q-list>
-				<q-expansion-item
-					v-for="(group, i) of store.todoGroups"
-					:key="'todog#' + i"
-					switch-toggle-side
-					expand-separator
-					icon="perm_identity"
-					:label="group.title || `${group.start} - ${group.end}`"
-					:caption="group.title ? `${group.start} - ${group.end}` : ''"
-				>
-					<q-card v-for="todo of store.groupsTodos[i]" :key="todo.content + todo.dateFulfill">
-						{{ todo.content }}
-					</q-card>
-				</q-expansion-item>
+				<to-do-group
+					v-for="group of vTodosGroups"
+					:key="'todog#' + group.id"
+					:ivgroup="group"
+					type="simple"
+				/>
+
       </q-list>
 			<q-btn color="primary" @click="addTodoGroupMenu">
 				<q-icon center size="2em" name="add" />
@@ -46,11 +40,14 @@
 <script setup lang="ts">
 import { useTodoStore } from 'src/stores/todoStore';
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
 import PromptTodoGroup, { type Payload as TodoGroupCreation } from 'src/components/dialogs/PromptTodoGroup.vue';
+import ToDoGroup from 'src/components/ToDoGroup.vue';
 
 const $q = useQuasar();
 const store = useTodoStore();
+const { vTodosGroups } = storeToRefs(store);
 
 const leftDrawerOpen = ref(false);
 
@@ -73,7 +70,7 @@ const addTodoGroupMenu = () => $q.dialog({
 	align-items: center;
 	gap: 4px;
 	padding: 2px 4px;
-	>button {
+	>* {
 		width: 100%;
 		display: block;
 	}

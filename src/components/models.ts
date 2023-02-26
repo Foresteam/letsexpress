@@ -10,7 +10,7 @@ export interface ITodoTimedGroup {
 	itemIDs: number[];
 };
 
-export const findTodos = (where: { [key: number]: ITodo | undefined }, itemIDs: number[]) => itemIDs.map(id => where[id] as ITodo);
+export const findTodos = <T extends ITodo>(where: T[], itemIDs: number[]) => itemIDs.map(id => where[id] as T);
 export const dateToString = (date: Date) => `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 export const dateFromString = (s: string) => {
 	const split = s.split('/').map(s => parseInt(s));
