@@ -17,7 +17,7 @@ export const useTodoStore = defineStore('counter', {
 		addTodoTimedGroup(group: ITodoTimedGroup, endPrevious = true) {
 			const last = this.todoGroups.at(-1);
 			if (endPrevious && last && last.end == 'current')
-				last.end = new Date();
+				last.end = undefined;
 			this.todoGroups.push(group);
 		}
 	},

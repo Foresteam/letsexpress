@@ -16,6 +16,7 @@
       bordered
 			class="drawer"
     >
+			<q-btn act>All-todos</q-btn>
       <q-list>
 				<q-expansion-item
 					v-for="(group, i) of store.todoGroups"
@@ -23,9 +24,10 @@
 					switch-toggle-side
 					expand-separator
 					icon="perm_identity"
-					:label="`${group.start} - ${group.end}`"
+					:label="group.title || `${group.start} - ${group.end}`"
+					:caption="group.title ? `${group.start} - ${group.end}` : ''"
 				>
-					<q-card v-for="todo of store.groupsTodos[i]" :key="todo.content + todo.date">
+					<q-card v-for="todo of store.groupsTodos[i]" :key="todo.content + todo.dateFulfill">
 						{{ todo.content }}
 					</q-card>
 				</q-expansion-item>
@@ -45,7 +47,7 @@
 import { useTodoStore } from 'src/stores/todoStore';
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
-import PromptTodoGroup, { type Payload as TodoGroupCreation } from 'src/components/Dialogs/PromptTodoGroup.vue';
+import PromptTodoGroup, { type Payload as TodoGroupCreation } from 'src/components/dialogs/PromptTodoGroup.vue';
 
 const $q = useQuasar();
 const store = useTodoStore();
@@ -56,18 +58,27 @@ const toggleLeftDrawer = () => leftDrawerOpen.value = !leftDrawerOpen.value;
 
 const addTodoGroupMenu = () => $q.dialog({
 	component: PromptTodoGroup
-}).onOk((payload: TodoGroupCreation) => {
-	console.log(payload);
-});
+}).onOk((payload: TodoGroupCreation) => store.addTodoTimedGroup({
+	start: payload.dateRange.from,
+	end: payload.dateRange.to,
+	itemIDs: [],
+	title: payload.title
+}, payload.endPrevious));
 </script>
 
 <style lang="scss" scoped>
 ::v-deep(.drawer) {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	gap: 4px;
 	padding: 2px 4px;
 	>button {
 		width: 100%;
 		display: block;
-		margin: auto;
 	}
+}
+hr {
+	width: 100%;
 }
 </style>

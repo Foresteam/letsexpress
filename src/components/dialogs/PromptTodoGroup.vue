@@ -5,13 +5,14 @@
 				<div class="text-h6">Add timed todo group</div>
 			</q-card-section>
 			<q-card-section class="q-pt-none">
-				<q-input outlined v-model="title" label="Group title" />
+				<q-input :dense="$q.platform.is.capacitor" outlined v-model="title" label="Group title" />
 				<q-btn-group spread class="q-mt-sm">
-					<q-input outlined v-model="sDateRange" class="col-10" />
-					<q-btn-dropdown color="primary">
+					<q-input :dense="$q.platform.is.capacitor" outlined v-model="sDateRange" class="col-10" />
+					<q-btn-dropdown :dense="$q.platform.is.capacitor" color="primary">
 						<q-date v-model="dateRange" range class="q-mx-auto" style="display: block;" />
 					</q-btn-dropdown>
 				</q-btn-group>
+				<q-checkbox v-model="endPrevious" label="End previous group on this date" class="q-mt-sm" />
 			</q-card-section>
 
       <!-- buttons example -->
@@ -27,18 +28,23 @@
 import { useDialogPluginComponent } from 'quasar';
 import { ref, computed, onMounted } from 'vue';
 import { dateToString } from '../models';
+import { useQuasar } from 'quasar';
 
 export interface Payload {
 	title: string;
+	endPrevious: boolean;
 	dateRange: {
 		from: string;
-		to: string;
+		to?: string;
 	};
 };
+
+const $q = useQuasar();
 
 const props = defineProps<{ dateBegin?: Date }>();
 
 const dateRange = ref<Payload['dateRange'] | string>({ from: '', to: '' });
+const endPrevious = ref(true);
 const sDateRange = computed(() => typeof(dateRange.value) == 'object' ?
 	`${dateRange.value.from || '____/__/__'} - ${dateRange.value.to || 'current'}` :
 	`${dateRange.value || '____/__/__'} - current`
@@ -55,9 +61,10 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginC
 
 const onOKClick = () => onDialogOK({
 	title: title.value,
+	endPrevious: endPrevious.value,
 	dateRange: {
 		from: (dateRange.value as Payload['dateRange']).from ?? dateRange.value as string,
-		to: (dateRange.value as Payload['dateRange']).to || 'current'
+		to: (dateRange.value as Payload['dateRange']).to || undefined
 	}
 } as Payload);
 
