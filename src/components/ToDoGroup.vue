@@ -29,7 +29,7 @@
 				<div class="text-h6">
 					{{ group.title }}
 				</div>
-				<div class="text-h6">
+				<div class="text-subtitle">
 					{{ group.vDate }}
 				</div>
 			</div>

@@ -22,11 +22,16 @@ const verifiedKeys = <T extends object>(reference: T, value: T): T => {
 	return value;
 };
 
+export const isExpired = (sdate: string) => {
+	const todayDate = new Date();
+	const d = Math.floor((dateFromString(sdate).getTime() - todayDate.getTime()) / 1000 / 60 / 60 / 24);
+	return d < 0;
+};
 const deadlineString = (sdate: string, brackets = true) => {
 	const todayDate = new Date();
 	const today = dateToString(todayDate);
 	const d = Math.floor((dateFromString(sdate).getTime() - todayDate.getTime()) / 1000 / 60 / 60 / 24);
-	if (d < 0)
+	if (isExpired(sdate))
 		return '😅';
 	const brace = (t: string) => brackets ? `(${t})` : t;
 	if (d == 0 && today == sdate)
@@ -34,7 +39,7 @@ const deadlineString = (sdate: string, brackets = true) => {
 	return brace(`${d > 0 ? d : '<1'} days left${d > 0 ? '' : '!'}`);
 };
 
-export const useTodoStore = defineStore('counter', {
+export const useTodoStore = defineStore('todos', {
 	state: () => ({
 		todos: {} as { [key: number]: ITodo | undefined },
 		todoGroups: [] as ITodoTimedGroup[]
@@ -73,24 +78,25 @@ export const useTodoStore = defineStore('counter', {
 					deadline
 				} as Partial<IVTodo>);
 			}
-			return todos;
+			return todos.sort((a, b) => dateFromString(getDeadline(a) ?? dateToString(new Date())).getTime() - dateFromString(getDeadline(b) ?? dateToString(new Date(0))).getTime());
 		},
 		vTodosGroups(): IVTodoTimedGroup[] {
-			return this.todoGroups.map(
+			return (this.todoGroups.map(
 				(g, i) => Object.assign({}, g, <Partial<IVTodoTimedGroup>>{
 					vDate: (g.end ? `${g.start} - ${g.end}` : g.start) + ' ' + deadlineString(g.end ?? g.start),
 					items: this.vTodos.filter(t => g.itemIDs.includes(t.id)),
 					id: i
 				})
-			) as IVTodoTimedGroup[];
+			) as IVTodoTimedGroup[])
+				.sort((a, b) => dateFromString(a.end ?? a.start).getTime() - dateFromString(b.end ?? b.start).getTime());
 		},
 	},
 	actions: {
 		async saveState() {
-			LocalStorage.set('todos', JSON.stringify(this.$state));
+			LocalStorage.set(this.$id, JSON.stringify(this.$state));
 		},
 		async loadState() {
-			Object.assign(this.$state, JSON.parse(LocalStorage.getItem('todos') || '{}'));
+			Object.assign(this.$state, JSON.parse(LocalStorage.getItem(this.$id) || '{}'));
 		},
 		addTodo(todo: ITodo) {
 			const id = parseInt(Object.entries(this.todos).at(-1)?.at(0) as (string | undefined) ?? '-1') + 1;
@@ -128,8 +134,8 @@ export const useTodoStore = defineStore('counter', {
 		},
 		addTodoTimedGroup(group: ITodoTimedGroup, endPrevious = true) {
 			const last = this.todoGroups.at(-1);
-			if (endPrevious && last && last.end == 'current')
-				last.end = undefined;
+			if (endPrevious && last && last.end && group.start)
+				last.end = group.start;
 			this.todoGroups.push(group);
 			this.saveState();
 		}

@@ -6,7 +6,10 @@
         <q-toolbar-title>
           Let's Express
         </q-toolbar-title>
-        <div>Quasar v{{ $q.version }}</div>
+				<q-tabs>
+					<q-route-tab name="todos" to="/" label="Todos" />
+					<q-route-tab name="groups" to="/groups" label="Groups" />
+				</q-tabs>
       </q-toolbar>
     </q-header>
 
@@ -24,6 +27,7 @@
 					:key="'todog#' + group.id"
 					:ivgroup="group"
 					type="simple"
+					class="q-mt-sm"
 				/>
 
       </q-list>
@@ -33,10 +37,6 @@
     </q-drawer>
 
     <q-page-container>
-			<q-tabs>
-				<q-route-tab name="todos" to="/" label="Todos" />
-				<q-route-tab name="groups" to="/groups" label="Groups" />
-			</q-tabs>
 			<router-view />
     </q-page-container>
   </q-layout>
