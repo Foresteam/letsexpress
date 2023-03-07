@@ -1,6 +1,6 @@
 <template>
 	<q-btn v-if="type == 'item'" class="q-ma-none bg-bg" style="width: 100%">
-		<div class="col">
+		<div class="column">
 			<q-item-label>
 				{{ ivgroup.title }}
 			</q-item-label>
@@ -13,12 +13,14 @@
 		<template v-if="type == 'simple'">
 			<q-expansion-item switch-toggle-side expand-separator class="expansion">
 				<template #header>
-					<div class="row justify-between" style="width: 100%">
-						<div style="display: flex; flex-direction: column; padding: 0px; margin: auto 0px">
+					<div class="row justify-between no-wrap" style="width: 100%">
+						<div class="column q-pa-none q-my-auto q-mx-none">
 							<q-item-label>{{ shortenedTitle }}</q-item-label>
 							<q-item-label caption>{{ group.vDate }}</q-item-label>
 						</div>
-						<delete-button @click="store.removeGroup(ivgroup.id)" />
+						<div>
+							<delete-button @click="store.removeGroup(ivgroup.id)" />
+						</div>
 					</div>
 				</template>
 				<to-do v-for="todo of ivgroup.items" :key="`sgtodo${todo.id}`" :ivtodo="todo" simplified />

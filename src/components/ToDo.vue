@@ -1,12 +1,25 @@
 <template>
-	<q-card class="todo bg-bg" flat :class="{ done: ivtodo.completed }">
-		<template v-if="simplified">
-			<q-checkbox v-model="completed" style="width: 100%">
-				{{ ivtodo.content }}
-				<q-item-label caption style="color: rgba(255, 255, 255, .8)">{{ ivtodo.vDateShort }}</q-item-label>
-			</q-checkbox>
+	<q-card v-if="simplified" class="todo bg-bg" flat :class="{ done: ivtodo.completed }">
+		<q-checkbox v-model="completed" style="width: 100%">
+			{{ ivtodo.content }}
+			<q-item-label caption style="color: rgba(255, 255, 255, .8)">{{ ivtodo.vDateShort }}</q-item-label>
+		</q-checkbox>
+	</q-card>
+	<q-slide-item 
+		v-else
+		right-color="deep-orange"
+		left-color="primary"
+		@right="swipe(undefined, drop)"
+		@left="details => swipe(details, editPopup)"
+	>
+		<template #left>
+			<q-icon name="edit" />
 		</template>
-		<template v-else>
+		<template #right>
+			<q-icon name="delete" />
+		</template>
+
+		<q-card class="todo bg-bg" flat :class="{ done: ivtodo.completed }">
 			<div class="group">
 				<q-checkbox v-model="completed">
 					{{ shortenedTask }}
@@ -17,14 +30,16 @@
 			<div v-if="ivtodo.details" class="text-subtitle details">
 				{{ ivtodo.details }}
 			</div>
-		</template>
-	</q-card>
+		</q-card>
+	</q-slide-item>
 </template>
 
 <script lang="ts" setup>
 import { useTodoStore, type IVTodo } from 'src/stores/todoStore';
 import { computed } from 'vue';
+import { useQuasar } from 'quasar';
 import DeleteButton from 'src/components/DeleteButton.vue';
+import { useTodoPopup } from './dialogs/popups';
 
 const props = defineProps<{
 	simplified?: boolean;
@@ -32,15 +47,22 @@ const props = defineProps<{
 }>();
 
 const store = useTodoStore();
+const $q = useQuasar();
+
+const editPopup = useTodoPopup($q, store, props.ivtodo);
 
 const completed = computed({
 	get: () => props.ivtodo.completed,
-	set: value => {
-		store.updateTodo(props.ivtodo.id, { completed: value });
-		console.log(value);
-	}
+	set: value => store.updateTodo(props.ivtodo.id, { completed: value })
 });
 const shortenedTask = computed(() => props.ivtodo.content.substring(0, 20));
+
+const swipe = ({ reset }: { reset?: () => void } = { reset: undefined  }, action: () => unknown) => {
+	setTimeout(reset ?? action, 100);
+	reset && action();
+};
+
+const drop = () => store.removeTodo(props.ivtodo.id);
 </script>
 
 <style lang="scss" scoped>

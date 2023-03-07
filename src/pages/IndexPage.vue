@@ -14,22 +14,14 @@ import { useQuasar } from 'quasar';
 import { computed } from 'vue';
 import { useTodoStore, isExpired } from 'src/stores/todoStore';
 import { usePreferencesStore } from 'src/stores/preferencesStore';
-import PromptTodo, { type Payload as TodoCreation } from 'src/components/dialogs/PromptTodo.vue';
+import { useTodoPopup } from 'src/components/dialogs/popups';
 import ToDo from 'src/components/ToDo.vue';
 
 const $q = useQuasar();
 const store = useTodoStore();
 const prefs = usePreferencesStore().state;
 
-const addTodoMenu = () => $q.dialog({
-	component: PromptTodo
-}).onOk((payload: TodoCreation) => {
-	const group = payload.group;
-	delete payload.group;
-	const id = store.addTodo(payload);
-	if (group !== undefined)
-		store.groupTodo(group, id);
-});
+const addTodoMenu = useTodoPopup($q, store);
 
 const todos = computed(() => store.vTodos.filter(t => (!t.deadline || !isExpired(t.deadline) || prefs.showExpired) && (!t.completed || prefs.showDone)));
 </script>

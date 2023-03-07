@@ -22,15 +22,15 @@ const verifiedKeys = <T extends object>(reference: T, value: T): T => {
 	return value;
 };
 
-export const isExpired = (sdate: string) => {
+export const dayExpirationDelta = (sdate: string) => {
 	const todayDate = new Date();
 	const d = Math.floor((dateFromString(sdate).getTime() - todayDate.getTime()) / 1000 / 60 / 60 / 24);
-	return d < 0;
+	return { d, todayDate };
 };
+export const isExpired = (sdate: string) => dayExpirationDelta(sdate).d < 0;
 const deadlineString = (sdate: string, brackets = true) => {
-	const todayDate = new Date();
+	const { d, todayDate } = dayExpirationDelta(sdate);
 	const today = dateToString(todayDate);
-	const d = Math.floor((dateFromString(sdate).getTime() - todayDate.getTime()) / 1000 / 60 / 60 / 24);
 	if (isExpired(sdate))
 		return '😅';
 	const brace = (t: string) => brackets ? `(${t})` : t;
@@ -115,6 +115,21 @@ export const useTodoStore = defineStore('todos', {
 		groupTodo(group: number, todo: number) { 
 			this.todoGroups[group].itemIDs.push(todo);
 			this.saveState();
+		},
+		ungroupTodo(id: number) {
+			let save = false;
+			for (const group of this.todoGroups)
+				if (group.itemIDs.includes(id)) {
+					group.itemIDs.splice(group.itemIDs.indexOf(id), 1);
+					save = true;
+				}
+			save && this.saveState();
+		},
+		getGroup(todoID: number): number | undefined {
+			for (const [id, group] of Object.entries(this.todoGroups))
+				if (group.itemIDs.includes(todoID))
+					return +id;
+			return undefined;
 		},
 		updateTodo(id: number, value: Partial<ITodo>) {
 			if (!Object.keys(this.todos).includes(id + ''))

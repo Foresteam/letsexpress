@@ -17,20 +17,13 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { useTodoStore } from 'src/stores/todoStore';
-import PromptTodoGroup, { type Payload as TodoGroupCreation } from 'src/components/dialogs/PromptTodoGroup.vue';
+import { useTodoGroupPopup } from 'src/components/dialogs/popups';
 import ToDoGroup from 'src/components/ToDoGroup.vue';
 
 const $q = useQuasar();
 const store = useTodoStore();
 
-const addTodoGroupMenu = () => $q.dialog({
-	component: PromptTodoGroup
-}).onOk((payload: TodoGroupCreation) => store.addTodoTimedGroup({
-	start: payload.dateRange.from,
-	end: payload.dateRange.to,
-	itemIDs: [],
-	title: payload.title
-}, payload.endPrevious));
+const addTodoGroupMenu = useTodoGroupPopup($q, store);
 </script>
 
 <style lang="scss" scoped>

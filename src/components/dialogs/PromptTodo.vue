@@ -64,7 +64,7 @@ import { useDialogPluginComponent } from 'quasar';
 import { ref, computed } from 'vue';
 import { type ITodo } from '../models';
 import { useQuasar } from 'quasar';
-import { useTodoStore } from 'src/stores/todoStore';
+import { IVTodo, useTodoStore } from 'src/stores/todoStore';
 import ToDoGroup from '../ToDoGroup.vue';
 import useValidation from 'src/components/useValidation';
 
@@ -75,10 +75,14 @@ export interface Payload extends ITodo {
 const $q = useQuasar();
 const store = useTodoStore();
 
-const task = ref('');
-const details = ref('');
-const _sDate = ref('');
-const _group = ref<number>();
+const props = defineProps<{
+	edit?: IVTodo & { group?: number }
+}>();
+
+const task = ref(props.edit?.content || '');
+const details = ref(props.edit?.details || '');
+const _sDate = ref(props.edit?.dateFulfill || '');
+const _group = ref<number | undefined>(props.edit?.group);
 
 const validation = useValidation({
 	task: () => task.value.length > 0
