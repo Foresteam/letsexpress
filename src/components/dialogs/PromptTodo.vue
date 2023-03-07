@@ -6,7 +6,7 @@
 			</q-card-section>
 			<q-card-section class="q-pt-none">
 				<q-input
-					:dense="$q.platform.is.capacitor"
+					:dense="$q.platform.has.touch"
 					outlined
 					v-model="task"
 					label="Task"
@@ -15,9 +15,9 @@
 					error-message="Required"
 					@update:model-value="validation.form.task.unlocked.value = true"
 				/>
-				<q-input :dense="$q.platform.is.capacitor" outlined v-model="details" label="Details" type="textarea" class="q-mt-sm" />
+				<q-input :dense="$q.platform.has.touch" outlined v-model="details" label="Details" type="textarea" class="q-mt-sm" />
 
-				<q-btn-dropdown :dense="$q.platform.is.capacitor" color="primary" class="q-mt-sm" style="width: 100%" auto-close>
+				<q-btn-dropdown :dense="$q.platform.has.touch" color="primary" class="q-mt-sm" style="width: 100%" auto-close>
 					<template #label>
 						<to-do-group v-if="group" :ivgroup="group" type="item" />
 						<div v-else style="width: 100%">
@@ -25,7 +25,7 @@
 						</div>
 					</template>
 
-					<q-list :dense="!$q.platform.is.capacitor">
+					<q-list :dense="!$q.platform.has.touch">
 						<q-item>
 							<q-input dense v-model="filterGroups" label="Search" style="width: 100%" />
 						</q-item>
@@ -43,8 +43,8 @@
 				</q-btn-dropdown>
 
 				<q-btn-group spread class="q-mt-sm">
-					<q-input :dense="!$q.platform.is.capacitor" outlined readonly :model-value="sDate" label="Deadline" class="col-10" />
-					<q-btn-dropdown :dense="!$q.platform.is.capacitor" color="primary">
+					<q-input :dense="!$q.platform.has.touch" outlined readonly :model-value="sDate" label="Deadline" class="col-10" />
+					<q-btn-dropdown :dense="!$q.platform.has.touch" color="primary">
 						<q-date v-model="_sDate" class="q-mx-auto" style="display: block;" />
 					</q-btn-dropdown>
 				</q-btn-group>

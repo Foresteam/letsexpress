@@ -6,7 +6,7 @@
 			</q-card-section>
 			<q-card-section class="q-pt-none">
 				<q-input
-					:dense="!$q.platform.is.capacitor"
+					:dense="!$q.platform.has.touch"
 					outlined
 					v-model="title"
 					label="Group title"

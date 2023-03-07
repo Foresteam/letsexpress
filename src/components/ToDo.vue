@@ -10,7 +10,7 @@
 		right-color="deep-orange"
 		left-color="primary"
 		@right="swipe(undefined, drop)"
-		@left="details => swipe(details, editPopup)"
+		@left="details => swipe(details, edit)"
 	>
 		<template #left>
 			<q-icon name="edit" />
@@ -25,7 +25,10 @@
 					{{ shortenedTask }}
 					<q-item-label caption style="color: rgba(255, 255, 255, .8)">{{ ivtodo.vDate }}</q-item-label>
 				</q-checkbox>
-				<delete-button @click="store.removeTodo(ivtodo.id)" />
+				<template v-if="!$q.platform.has.touch">
+					<edit-button @click="edit()" />
+					<delete-button @click="drop()" />
+				</template>
 			</div>
 			<div v-if="ivtodo.details" class="text-subtitle details">
 				{{ ivtodo.details }}
@@ -39,6 +42,7 @@ import { useTodoStore, type IVTodo } from 'src/stores/todoStore';
 import { computed } from 'vue';
 import { useQuasar } from 'quasar';
 import DeleteButton from 'src/components/DeleteButton.vue';
+import EditButton from './EditButton.vue';
 import { useTodoPopup } from './dialogs/popups';
 
 const props = defineProps<{
@@ -49,7 +53,6 @@ const props = defineProps<{
 const store = useTodoStore();
 const $q = useQuasar();
 
-const editPopup = useTodoPopup($q, store, props.ivtodo);
 
 const completed = computed({
 	get: () => props.ivtodo.completed,
@@ -62,6 +65,7 @@ const swipe = ({ reset }: { reset?: () => void } = { reset: undefined  }, action
 	reset && action();
 };
 
+const edit = useTodoPopup($q, store, props.ivtodo);
 const drop = () => store.removeTodo(props.ivtodo.id);
 </script>
 
@@ -76,6 +80,7 @@ const drop = () => store.removeTodo(props.ivtodo.id);
 .group {
 	display: flex;
 	gap: 10px;
+	padding: 5px 0px 5px;
 	>* {
 		&:not(:first-child) {
 			flex-shrink: 1;
@@ -84,9 +89,8 @@ const drop = () => store.removeTodo(props.ivtodo.id);
 			flex-grow: 1;
 		}
 	}
-	button {
-		margin: 5px;
-		margin-right: 0px;
+	>button {
+		margin-left: 5px;
 	}
 }
 .todo {
