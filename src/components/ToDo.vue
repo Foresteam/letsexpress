@@ -53,7 +53,6 @@ const props = defineProps<{
 const store = useTodoStore();
 const $q = useQuasar();
 
-
 const completed = computed({
 	get: () => props.ivtodo.completed,
 	set: value => store.updateTodo(props.ivtodo.id, { completed: value })

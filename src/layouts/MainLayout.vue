@@ -3,9 +3,6 @@
     <q-header>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title>
-          Let's Express
-        </q-toolbar-title>
 				<q-tabs>
 					<q-route-tab name="todos" to="/" label="Todos" />
 					<q-route-tab name="groups" to="/groups" label="Groups" />

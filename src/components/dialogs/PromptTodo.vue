@@ -2,7 +2,10 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
 			<q-card-section>
-				<div class="text-h6">Add todo</div>
+				<div class="text-h6">
+					<template v-if="edit">Edit todo</template>
+					<template v-else>Add todo</template>
+				</div>
 			</q-card-section>
 			<q-card-section class="q-pt-none">
 				<q-input
@@ -15,9 +18,9 @@
 					error-message="Required"
 					@update:model-value="validation.form.task.unlocked.value = true"
 				/>
-				<q-input :dense="$q.platform.has.touch" outlined v-model="details" label="Details" type="textarea" class="q-mt-sm" />
+				<q-input :dense="!$q.platform.has.touch" outlined v-model="details" label="Details" type="textarea" class="q-mt-sm" />
 
-				<q-btn-dropdown :dense="$q.platform.has.touch" color="primary" class="q-mt-sm" style="width: 100%" auto-close>
+				<q-btn-dropdown dense align="right" color="primary" class="q-mt-sm group-dropdown" auto-close>
 					<template #label>
 						<to-do-group v-if="group" :ivgroup="group" type="item" />
 						<div v-else style="width: 100%">
@@ -120,3 +123,13 @@ const onOKClick = () => {
 	});
 };
 </script>
+
+<style lang="scss" scoped>
+.group-dropdown {
+	width: 100%;
+	// Disable the freaking no-wrap (for the option of the component does not disable it)
+	&::v-deep(>.q-btn__content) {
+		white-space: normal !important;
+	}
+}
+</style>

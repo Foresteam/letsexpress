@@ -1,5 +1,5 @@
 <template>
-	<q-btn v-if="type == 'item'" class="q-ma-none bg-bg" style="width: 100%">
+	<q-btn v-if="type == 'item'" class="q-ma-none bg-bg" style="width: 100%;">
 		<div class="column">
 			<q-item-label>
 				{{ ivgroup.title }}
@@ -27,14 +27,29 @@
 			</q-expansion-item>
 		</template>
 		<template v-if="type == 'unfolded'">
-			<div class="q-pl-sm bg-accent">
-				<div class="text-h6">
-					{{ group.title }}
+			<q-slide-item
+				class="bg-accent"
+				right-color="deep-orange"
+				left-color="primary"
+				@right="swipe(undefined, drop)"
+				@left="details => swipe(details, edit)"
+			>
+				<template #left>
+					<q-icon name="edit" />
+				</template>
+				<template #right>
+					<q-icon name="delete" />
+				</template>
+
+				<div class="q-pl-sm">
+					<div class="text-h6">
+						{{ group.title }}
+					</div>
+					<div class="text-subtitle">
+						{{ group.vDate }}
+					</div>
 				</div>
-				<div class="text-subtitle">
-					{{ group.vDate }}
-				</div>
-			</div>
+			</q-slide-item>
 			<to-do v-for="todo of ivgroup.items" :key="`sgtodo${todo.id}`" :ivtodo="todo" />
 		</template>
 	</q-card>
@@ -58,4 +73,11 @@ const group = computed({
 });
 
 const shortenedTitle = computed(() => group.value.title.substring(0, 20));
+
+const swipe = ({ reset }: { reset?: () => void } = { reset: undefined  }, action: () => unknown) => {
+	setTimeout(reset ?? action, 100);
+	reset && action();
+};
+const drop = () => store.removeGroup(props.ivgroup.id);
+const edit = () => undefined;
 </script>
